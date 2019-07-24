@@ -1,3 +1,6 @@
+namespaces:
+- name: "spike-dcs-mtls"
+
 global:
   account:
     name: "local"
