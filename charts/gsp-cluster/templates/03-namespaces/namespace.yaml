@@ -97,23 +97,6 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: harbor
-  namespace: {{ .name }}
-data:
-  root_key: {{ $.Values.notary.rootKey | b64enc }}
-  ci_key: {{ $.Values.notary.delegationKey | b64enc }}
-  harbor_username: {{ "admin" | b64enc }}
-  harbor_password: {{ $.Values.harbor.harborAdminPassword | b64enc }}
-  harbor_url: {{ (printf "https://registry.%s" $.Values.global.cluster.domain) | b64enc }}
-  notary_root_passphrase: {{ $.Values.notary.rootPassphrase | b64enc }}
-  notary_targets_passphrase: {{ $.Values.notary.targetsPassphrase | b64enc }}
-  notary_snapshot_passphrase: {{ $.Values.notary.snapshotPassphrase | b64enc }}
-  notary_delegation_passphrase: {{ $.Values.notary.delegationPassphrase | b64enc }}
-  notary_url: {{ (printf "https://notary.%s" $.Values.global.cluster.domain) | b64enc }}
----
-apiVersion: v1
-kind: Secret
-metadata:
   name: registry-creds
   namespace: {{ .name }}
 data:
@@ -129,8 +112,6 @@ data:
   name: {{ $.Values.global.cluster.name | b64enc }}
   domain: {{ $.Values.global.cluster.domain | b64enc }}
   cloudHsmIp: {{ $.Values.global.cloudHsm.ip | b64enc }}
-  privateKey: {{ $.Values.global.cluster.privateKey | b64enc }}
-  publicKey: {{ $.Values.global.cluster.publicKey | b64enc }}
 ---
 apiVersion: v1
 kind: Secret
@@ -158,14 +139,6 @@ subjects:
 - kind: ServiceAccount
   name: {{ $.Release.Name }}-concourse-web
   namespace: {{ $.Release.Namespace }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: github
-  namespace: {{ .name }}
-data:
-  api-token: {{ $.Values.githubAPIToken | b64enc }}
 ---
 apiVersion: v1
 kind: ServiceAccount
