@@ -67,6 +67,7 @@ data:
             server_name  localhost;
 
             location / {
+              add_header lol $http_lol;
               add_header X-Forwarded-Client-Cert $http_x_forwarded_client_cert;
               return 200;
             }
