@@ -155,3 +155,10 @@ prometheus-operator:
 serviceOperator:
   kiamServerRoleARN: ${kiam_server_role_arn}
   permissionsBoundaryARN: ${service_operator_boundary_arn}
+
+external-dns:
+  zoneIdFilters:
+  - ${cluster_domain_id}
+  txtOwnerId: external-dns-${cluster_name}
+  podAnnotations:
+    iam.amazonaws.com/role: ${external_dns_iam_role_name}

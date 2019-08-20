@@ -46,12 +46,14 @@ data "template_file" "values" {
     cloudwatch_log_shipping_role     = "${aws_iam_role.cloudwatch_log_shipping_role.name}"
     cloudwatch_log_group_name        = "${aws_cloudwatch_log_group.logs.name}"
     service_operator_boundary_arn    = "${aws_iam_policy.service-operator-managed-role-permissions-boundary.arn}"
+    external_dns_iam_role_name      = "${aws_iam_role.external_dns.name}"
 
     permitted_roles_regex = "^(${join("|", list(
       aws_iam_role.harbor.name,
       aws_iam_role.concourse.name,
       aws_iam_role.cloudwatch_log_shipping_role.name,
       aws_iam_role.gsp-service-operator.name,
+      aws_iam_role.external_dns.name,
     ))})$"
   }
 }
