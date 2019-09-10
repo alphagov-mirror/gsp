@@ -1,6 +1,6 @@
 # Per-namespace istio gateways
 
-We are migrating from using a single `ingressgateway` in `istio-system` to an `ingressgateway` in each namespace. At present this requires an "opt-in" via `-cluster-config` values settings to enable.
+We are migrating from using a single `ingressgateway` in `istio-system` to an `ingressgateway` in each namespace. You must opt into / enable an ingressgateway in each namespace via `*-cluster-config` values.
 
 For example, from `tech-ops-cluster-config`'s `sandbox-values`:
 

@@ -1,6 +1,6 @@
 # Public DNS
 
-The GSP allows applications to set DNS records (route53) based on istio `Gateway` resources on a per-namespace basis. The `Gateway` resource needs to carry the correct annotation to ensure the `external-dns` instance picks it up.
+The GSP allows applications to set DNS records (route53) based on istio `Gateway` resources on a per-namespace basis. The `Gateway` resource needs to carry the correct annotation (with key `externaldns.k8s.io/namespace`) to ensure the `external-dns` instance adds the corresponding A record(s).
 
 To set the DNS entry for the [gsp-canary][]:
 
@@ -23,14 +23,16 @@ spec:
       number: 443
       protocol: HTTPS
     tls:
+      credentialName: sandbox-gsp-canary-ingress-certificate
       mode: SIMPLE
-      privateKey: /etc/istio/ingressgateway-certs/tls.key
-      serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
+      privateKey: sds
+      serverCertificate: sds
 ```
 
-Each namespace has an instance of [external-dns][] running that will configure DNS A records to point at the load balancer created for the ingressgateway in the same namespace. The `externaldns.k8s.io/namespace: sandbox-main` annotation ensures the `external-dns` instance in the namespace picks it up.
+Each namespace has an instance of [external-dns][] running that will configure DNS A records to point at the load balancer created for the ingressgateway in the same namespace.
 
-The locations of the TLS certificates will depend on the installation context. This example above uses the per-namespace gateway locations.
+The locations of the TLS certificates will depend on the installation context. This example above uses istio's [secret discovery service][] to dynamically load the certificate from a secret with the name given in `credentialName`.
 
 [external-dns]: https://github.com/kubernetes-incubator/external-dns
 [gsp-canary]: https://github.com/alphagov/gsp/tree/master/components/canary
+[secret discovery service]: https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-sds/
