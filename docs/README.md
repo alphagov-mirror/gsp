@@ -11,7 +11,7 @@
 - [GSP Architecture Overview](/docs/architecture/gsp-architecture-overview.md)
 - [Incident Reports](incident-reports)
 - [Making things private in Harbor](gds-supported-platform/making-things-private-in-harbor.md)
-- [Per-namespace istio gateways](gds-supported-platform/per-namespace-gateway-opt-in.md)
+- [Per-namespace istio gateways](gds-supported-platform/per-namespace-gateway.md)
 - [Public DNS](gds-supported-platform/external-dns.md)
 - [Public TLS Certificates](gds-supported-platform/tls-certificates.md)
 - [Sealing Secrets](gds-supported-platform/sealing-secrets.md)
