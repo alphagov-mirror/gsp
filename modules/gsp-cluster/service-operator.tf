@@ -59,6 +59,16 @@ data "aws_iam_policy_document" "service-operator" {
 
   statement {
     actions = [
+      "s3:*",
+    ]
+
+    resources = [
+      "arn:aws:s3:::role/${var.cluster_name}-*",
+    ]
+  }
+
+  statement {
+    actions = [
       "rds:*",
       "sqs:*",
     ]
