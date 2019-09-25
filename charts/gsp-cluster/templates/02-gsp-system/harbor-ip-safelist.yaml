@@ -30,4 +30,14 @@ spec:
   actions:
   - handler: harbor-ip-safelist
     instances: [ harbor-ip-safelist-originip ]
+---
+apiVersion: config.istio.io/v1alpha2
+kind: rule
+metadata:
+  name: harbor-portal-ip-safelist
+spec:
+  match: source.labels["istio"] == "gsp-system-ingressgateway" && destination.service.name == "gsp-harbor-portal"
+  actions:
+  - handler: harbor-ip-safelist
+    instances: [ harbor-ip-safelist-originip ]
 {{ end }}
