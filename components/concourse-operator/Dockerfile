@@ -1,4 +1,4 @@
-FROM golang:1.11 as builder
+FROM golang:1.12 as builder
 
 # install dep (required when not vendored)
 RUN wget https://github.com/golang/dep/releases/download/v0.5.3/dep-linux-amd64 \
@@ -17,10 +17,11 @@ WORKDIR /go/src/github.com/alphagov/gsp/components/concourse-operator
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
-COPY . .
 
 # install dependencies
-RUN sh -c 'if [ -e ./vendor ]; then echo skipping dep ensure as found vendor dir 1>&2; else dep ensure -vendor-only; fi'
+RUN dep init
+COPY . .
+RUN dep ensure -update
 
 # run unit tests
 ENV KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=1m

@@ -136,8 +136,14 @@ func (r *ReconcilePipeline) update(teamName string, instance *concoursev1beta1.P
 	if found && err != nil {
 		return fmt.Errorf("couldn't obtain existing pipeline config: %s", err)
 	}
+
+  evaluatedYAML, err := EvaluatePipeline(pipelineYAML)
+  if err != nil {
+    return fmt.Errorf("failed to evaluate YAML for pipeline '%s' in team '%s' : %s", pipelineName, teamName, err)
+  }
+
 	// set pipeline
-	_, _, _, err = concourseClient.Team(teamName).CreateOrUpdatePipelineConfig(pipelineName, existingConfigVersion, []byte(pipelineYAML), true)
+	_, _, _, err = concourseClient.Team(teamName).CreateOrUpdatePipelineConfig(pipelineName, existingConfigVersion, evaluatedYAML, true)
 	if err != nil {
 		return fmt.Errorf("couldn't CreateOrUpdatePipelineConfig '%s' for team '%s': %s", pipelineName, teamName, err)
 	}
