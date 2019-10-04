@@ -13,6 +13,8 @@ set -eu
 		--var k8s_splunk_index=x \
 		--var hsm_splunk_hec_token=x \
 		--var hsm_splunk_index=x \
+        --var extra_workers_per_az_count=0 \
+        --var worker_on_demand_percentage_above_min=x \
 		--var github_client_secret=x \
 		--var github_client_id=x \
 		--var cluster_name=x \

@@ -58,17 +58,18 @@ resource "aws_cloudformation_stack" "worker-nodes" {
   capabilities  = ["CAPABILITY_IAM"]
 
   parameters = {
-    ClusterName                         = "${var.cluster_name}"
-    ClusterControlPlaneSecurityGroup    = "${aws_security_group.controller.id}"
-    NodeGroupName                       = "worker"
-    NodeAutoScalingGroupMinSize         = "${var.worker_count}"
-    NodeAutoScalingGroupDesiredCapacity = "${var.worker_count}"
-    NodeAutoScalingGroupMaxSize         = "${var.worker_count + 2}"
-    NodeInstanceType                    = "${var.worker_instance_type}"
-    NodeVolumeSize                      = "40"
-    BootstrapArguments                  = "--kubelet-extra-args \"--node-labels=node-role.kubernetes.io/worker --event-qps=0\""
-    VpcId                               = "${var.vpc_id}"
-    Subnets                             = "${join(",", var.private_subnet_ids)}"
+    ClusterName                                    = "${var.cluster_name}"
+    ClusterControlPlaneSecurityGroup               = "${aws_security_group.controller.id}"
+    NodeGroupName                                  = "worker"
+    NodeAutoScalingGroupMinSize                    = "${var.worker_count}"
+    NodeAutoScalingGroupDesiredCapacity            = "${var.worker_count}"
+    NodeAutoScalingGroupMaxSize                    = "${var.worker_count + 2}"
+    NodeAutoScalingGroupOnDemandPercentageAboveMin = "${var.worker_on_demand_percentage_above_min}"
+    NodeInstanceType                               = "${var.worker_instance_type}"
+    NodeVolumeSize                                 = "40"
+    BootstrapArguments                             = "--kubelet-extra-args \"--node-labels=node-role.kubernetes.io/worker --event-qps=0\""
+    VpcId                                          = "${var.vpc_id}"
+    Subnets                                        = "${join(",", var.private_subnet_ids)}"
   }
 
   timeouts {

@@ -101,6 +101,11 @@ Parameters:
     Type: Number
     Default: 1
 
+  NodeAutoScalingGroupOnDemandPercentageAboveMin:
+    Description: Percentage of nodes above the minimum size to launch as on-demand (rather than spot instances)
+    Type: Number
+    Default: 100
+
   NodeVolumeSize:
     Description: Node volume size
     Type: Number
@@ -159,6 +164,7 @@ Metadata:
           - NodeAutoScalingGroupMinSize
           - NodeAutoScalingGroupDesiredCapacity
           - NodeAutoScalingGroupMaxSize
+          - NodeAutoScalingGroupOnDemandPercentageAboveMin
           - NodeInstanceType
           - NodeInstanceProfile
           - NodeImageId
@@ -185,16 +191,20 @@ Resources:
       MaxSize: !Ref NodeAutoScalingGroupMaxSize
       VPCZoneIdentifier: !Ref Subnets
       TargetGroupARNs: !Ref NodeTargetGroups
-      # TODO: this is where we can in future provision spot instances
-      # MixedInstancesPolicy:
-      #   InstancesDistribution:
-      #     OnDemandBaseCapacity: !Ref NodeAutoScalingGroupMinSize
-      #   LaunchTemplate:
-      #     LaunchTemplateId: !Ref NodeLaunchTemplate
-      #     Version: !GetAtt NodeLaunchTemplate.LatestVersionNumber
-      #     Overrides:
-      #       - InstanceType: m5ad.xlarge
-      #       - InstanceType: m5d.xlarge
+      MixedInstancesPolicy:
+        InstancesDistribution:
+          OnDemandBaseCapacity: !Ref NodeAutoScalingGroupMinSize
+          OnDemandPercentageAboveBaseCapacity: !Ref NodeAutoScalingGroupOnDemandPercentageAboveMin
+        LaunchTemplate:
+          LaunchTemplateId: !Ref NodeLaunchTemplate
+          Version: !GetAtt NodeLaunchTemplate.LatestVersionNumber
+          Overrides:
+            - InstanceType: c5ad.xlarge
+            - InstanceType: c5d.xlarge
+            - InstanceType: m5ad.xlarge
+            - InstanceType: m5d.xlarge
+            - InstanceType: r5ad.xlarge
+            - InstanceType: r5d.xlarge
       Tags:
         - Key: Name
           Value: !Sub ${ClusterName}-${NodeGroupName}

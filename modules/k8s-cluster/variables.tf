@@ -37,6 +37,11 @@ variable "extra_workers_per_az_count" {
   default = "0"
 }
 
+variable "worker_on_demand_percentage_above_min" {
+  type    = "string"
+  default = "100"
+}
+
 variable "ci_worker_instance_type" {
   type    = "string"
   default = "t3.medium"
