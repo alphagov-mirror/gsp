@@ -15,6 +15,7 @@ global:
   priorityClassName: gsp-critical
 
 istio-cni:
+  hub: gcr.io/istio-release/install-cni
   tag: release-1.1-20190808-09-16
   excludeNamespaces:
   - istio-system
