@@ -90,7 +90,7 @@ subjects:
 - kind: ServiceAccount
   name: {{ .name }}-ingressgateway-service-account
 ---
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: namespace-default
