@@ -47,3 +47,10 @@ type ServiceEntryCreator interface {
 	GetServiceEntryName() string
 	GetServiceEntrySpecs(outputs Outputs) ([]map[string]interface{}, error)
 }
+
+// StackPolicyProvider allows a type to return a string representation of a
+// CloudFormationStack policy to prevent unauthorised operations on a given
+// stack.
+type StackPolicyProvider interface {
+	GetStackPolicy() string
+}

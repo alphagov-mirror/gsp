@@ -120,6 +120,41 @@ var _ = Describe("Postgres", func() {
 		Expect(postgres.GetStackName()).To(HavePrefix("xxx-postgres-default-example"))
 	})
 
+	It("should have a sensible stack policy", func() {
+		expectedStackPolicy := `
+{
+  "Statement" : [
+    {
+      "Effect" : "Deny",
+      "Action" : ["Update:Replace", "Update:Delete"],
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSCluster"
+    },
+    {
+      "Effect" : "Deny",
+      "Action" : ["Update:Replace", "Update:Delete"],
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSDBInstance"
+    },
+    {
+      "Effect" : "Allow",
+      "Action" : "Update:Modify",
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSCluster"
+    },
+    {
+      "Effect" : "Allow",
+      "Action" : "Update:Modify",
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSDBInstance"
+    }
+  ]
+}
+`
+		actualStackPolicy := postgres.GetStackPolicy()
+		Expect(actualStackPolicy).To(Equal(expectedStackPolicy))
+	})
+
 	Context("cloudformation", func() {
 
 		It("should have inputs for vpc config", func() {

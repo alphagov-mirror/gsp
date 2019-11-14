@@ -52,6 +52,37 @@ const (
 	PostgresPort         = "Port"
 	PostgresUsername     = "Username"
 	PostgresPassword     = "Password"
+
+	StackPolicy = `
+{
+  "Statement" : [
+    {
+      "Effect" : "Deny",
+      "Action" : ["Update:Replace", "Update:Delete"],
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSCluster"
+    },
+    {
+      "Effect" : "Deny",
+      "Action" : ["Update:Replace", "Update:Delete"],
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSDBInstance"
+    },
+    {
+      "Effect" : "Allow",
+      "Action" : "Update:Modify",
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSCluster"
+    },
+    {
+      "Effect" : "Allow",
+      "Action" : "Update:Modify",
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSDBInstance"
+    }
+  ]
+}
+`
 )
 
 var _ cloudformation.Stack = &Postgres{}
@@ -277,6 +308,12 @@ func (p *Postgres) GetServiceEntrySpecs(outputs cloudformation.Outputs) ([]map[s
 		},
 	}
 	return specs, nil
+}
+
+// GetStackPolicy implements cloudformation.Stack to return a serialised form of the stack policy, or nil if one is
+// not needed
+func (p *Postgres) GetStackPolicy() string {
+	return StackPolicy
 }
 
 // +kubebuilder:object:root=true

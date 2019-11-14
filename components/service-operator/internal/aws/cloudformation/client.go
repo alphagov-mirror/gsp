@@ -172,11 +172,13 @@ func (r *Client) create(ctx context.Context, stack Stack, params ...*Parameter) 
 	if err != nil {
 		return err
 	}
+
 	_, err = r.Client.CreateStackWithContext(ctx, &CreateStackInput{
-		Capabilities: capabilities,
-		TemplateBody: aws.String(string(yaml)),
-		StackName:    aws.String(stack.GetStackName()),
-		Parameters:   params,
+		Capabilities:    capabilities,
+		TemplateBody:    aws.String(string(yaml)),
+		StackName:       aws.String(stack.GetStackName()),
+		StackPolicyBody: aws.String(getStackPolicy(stack)),
+		Parameters:      params,
 	})
 	if err != nil {
 		return err
@@ -197,10 +199,11 @@ func (r *Client) update(ctx context.Context, stack Stack, params ...*Parameter) 
 		return err
 	}
 	_, err = r.Client.UpdateStackWithContext(ctx, &UpdateStackInput{
-		Capabilities: capabilities,
-		TemplateBody: aws.String(string(yaml)),
-		StackName:    aws.String(stack.GetStackName()),
-		Parameters:   params,
+		Capabilities:    capabilities,
+		TemplateBody:    aws.String(string(yaml)),
+		StackName:       aws.String(stack.GetStackName()),
+		StackPolicyBody: aws.String(getStackPolicy(stack)),
+		Parameters:      params,
 	})
 	if err != nil && !IsNoUpdateError(err) {
 		return err
@@ -484,4 +487,12 @@ func IsNotFoundError(err error) bool {
 		}
 	}
 	return false
+}
+
+func getStackPolicy(stack Stack) string {
+	var stackPolicy string = ""
+	if stackPolicyProvider, ok := stack.(StackPolicyProvider); ok {
+		stackPolicy = stackPolicyProvider.GetStackPolicy()
+	}
+	return stackPolicy
 }
