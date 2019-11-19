@@ -29,7 +29,7 @@ myApp:
 
 ### Resources & Limits
 
-resources should be specified in pod templates (both requests and limits) when parameterized in values.yaml files like:
+resources should be specified in pod templates (both requests and limits) when parameterised in values.yaml files like:
 
 ```
   myApp:
