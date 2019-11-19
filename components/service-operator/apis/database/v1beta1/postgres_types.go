@@ -54,37 +54,6 @@ const (
 	PostgresPort         = "Port"
 	PostgresUsername     = "Username"
 	PostgresPassword     = "Password"
-
-	StackPolicy = `
-{
-  "Statement" : [
-    {
-      "Effect" : "Deny",
-      "Action" : ["Update:Replace", "Update:Delete"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSCluster"
-    },
-    {
-      "Effect" : "Deny",
-      "Action" : ["Update:Replace", "Update:Delete"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance"
-    },
-    {
-      "Effect" : "Allow",
-      "Action" : "Update:Modify",
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSCluster"
-    },
-    {
-      "Effect" : "Allow",
-      "Action" : "Update:Modify",
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance"
-    }
-  ]
-}
-`
 )
 
 var _ cloudformation.Stack = &Postgres{}
