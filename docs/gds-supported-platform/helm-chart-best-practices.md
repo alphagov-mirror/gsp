@@ -20,7 +20,7 @@ namespace without clashing/clobbering resources with the same name.
 
 ### High Availability
 
-Replicas should be specified per application, rather than globaly so that they can we scaled individualy:
+Replicas should be specified per application, rather than globally so that they can we scaled individually:
 
 ```
 myApp:
