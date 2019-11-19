@@ -298,6 +298,7 @@ func (p *Postgres) GetStackPolicy() (string, error) {
 			Resource:  "LogicalResourceId/RDSCluster",
 		},
 	}
+
 	instanceCount := p.Spec.AWS.InstanceCount
 	if instanceCount < 1 {
 		instanceCount = DefaultInstanceCount
@@ -310,6 +311,7 @@ func (p *Postgres) GetStackPolicy() (string, error) {
 			Principal: "*",
 			Resource:  fmt.Sprintf("LogicalResourceId/%s%d", PostgresResourceInstance , i),
 		})
+
 		statements = append(statements, aws.StatementEntry{
 			Effect:    "Allow",
 			Action:    []string{"Update:Modify"},
@@ -326,6 +328,7 @@ func (p *Postgres) GetStackPolicy() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(stackPolicyBytes), nil
 }
 
