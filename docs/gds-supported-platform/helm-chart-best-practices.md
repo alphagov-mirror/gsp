@@ -2,7 +2,7 @@
 
 ## Overview
 
-Guidance for authoring Helm chart's suitable for production deployments.
+Guidance for authoring Helm charts suitable for production deployments.
 
 ### Use the release name in resource names
 
