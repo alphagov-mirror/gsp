@@ -343,7 +343,7 @@ func (p *Postgres) GetStackPolicy() (string, error) {
 		})
 		statements = append(statements, aws.StatementEntry{
 			Effect:    "Allow",
-			Action:    []string{"Update:Modify",},
+			Action:    []string{"Update:Modify"},
 			Principal: "*",
 			Resource:  fmt.Sprintf("LogicalResourceId/RDSDBInstance%d", i),
 		})
