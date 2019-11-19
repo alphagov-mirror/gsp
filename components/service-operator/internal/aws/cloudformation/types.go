@@ -52,5 +52,5 @@ type ServiceEntryCreator interface {
 // CloudFormationStack policy to prevent unauthorised operations on a given
 // stack.
 type StackPolicyProvider interface {
-	GetStackPolicy() string
+	GetStackPolicy() (string, error)
 }

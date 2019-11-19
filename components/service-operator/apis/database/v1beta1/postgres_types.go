@@ -16,11 +16,13 @@ limitations under the License.
 package v1beta1
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/alphagov/gsp/components/service-operator/internal/aws"
 	"github.com/alphagov/gsp/components/service-operator/internal/aws/cloudformation"
 	"github.com/alphagov/gsp/components/service-operator/internal/env"
 	"github.com/alphagov/gsp/components/service-operator/internal/object"
@@ -312,8 +314,50 @@ func (p *Postgres) GetServiceEntrySpecs(outputs cloudformation.Outputs) ([]map[s
 
 // GetStackPolicy implements cloudformation.Stack to return a serialised form of the stack policy, or nil if one is
 // not needed
-func (p *Postgres) GetStackPolicy() string {
-	return StackPolicy
+func (p *Postgres) GetStackPolicy() (string, error) {
+	statements := []aws.StatementEntry{
+		{
+			Effect:    "Deny",
+			Action:    []string{"Update:Replace", "Update:Delete"},
+			Principal: "*",
+			Resource:  "LogicalResourceId/RDSCluster",
+		},
+		{
+			Effect:    "Allow",
+			Action:    []string{"Update:Modify"},
+			Principal: "*",
+			Resource:  "LogicalResourceId/RDSCluster",
+		},
+	}
+	instanceCount := p.Spec.AWS.InstanceCount
+	if instanceCount < 1 {
+		instanceCount = DefaultInstanceCount
+	}
+
+	for i := 0; i < instanceCount; i++ {
+		statements = append(statements, aws.StatementEntry{
+			Effect:    "Deny",
+			Action:    []string{"Update:Replace", "Update:Delete"},
+			Principal: "*",
+			Resource:  fmt.Sprintf("LogicalResourceId/RDSDBInstance%d", i),
+		})
+		statements = append(statements, aws.StatementEntry{
+			Effect:    "Allow",
+			Action:    []string{"Update:Modify",},
+			Principal: "*",
+			Resource:  fmt.Sprintf("LogicalResourceId/RDSDBInstance%d", i),
+		})
+	}
+
+	stackPolicy := aws.StackPolicyDocument{
+		Statement: statements,
+	}
+
+	stackPolicyBytes, err := json.Marshal(&stackPolicy)
+	if err != nil {
+		return "", err
+	}
+	return string(stackPolicyBytes), nil
 }
 
 // +kubebuilder:object:root=true

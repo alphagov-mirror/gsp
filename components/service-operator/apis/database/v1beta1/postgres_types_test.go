@@ -11,6 +11,7 @@ import (
 	"github.com/alphagov/gsp/components/service-operator/apis/database/v1beta1"
 	"github.com/alphagov/gsp/components/service-operator/internal/aws/cloudformation"
 	"github.com/alphagov/gsp/components/service-operator/internal/env"
+	"github.com/nsf/jsondiff"
 )
 
 var _ = Describe("Postgres", func() {
@@ -121,7 +122,7 @@ var _ = Describe("Postgres", func() {
 	})
 
 	It("should have a sensible stack policy", func() {
-		expectedStackPolicy := `
+		expectedStackPolicy := []byte(`
 {
   "Statement" : [
     {
@@ -131,28 +132,44 @@ var _ = Describe("Postgres", func() {
       "Resource" : "LogicalResourceId/RDSCluster"
     },
     {
-      "Effect" : "Deny",
-      "Action" : ["Update:Replace", "Update:Delete"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance"
-    },
-    {
       "Effect" : "Allow",
-      "Action" : "Update:Modify",
+      "Action" : ["Update:Modify"],
       "Principal": "*",
       "Resource" : "LogicalResourceId/RDSCluster"
     },
     {
-      "Effect" : "Allow",
-      "Action" : "Update:Modify",
+      "Effect" : "Deny",
+      "Action" : ["Update:Replace", "Update:Delete"],
       "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance"
+      "Resource" : "LogicalResourceId/RDSDBInstance0"
+    },
+    {
+      "Effect" : "Allow",
+      "Action" : ["Update:Modify"],
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSDBInstance0"
+    },
+    {
+      "Effect" : "Deny",
+      "Action" : ["Update:Replace", "Update:Delete"],
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSDBInstance1"
+    },
+    {
+      "Effect" : "Allow",
+      "Action" : ["Update:Modify"],
+      "Principal": "*",
+      "Resource" : "LogicalResourceId/RDSDBInstance1"
     }
   ]
 }
-`
-		actualStackPolicy := postgres.GetStackPolicy()
-		Expect(actualStackPolicy).To(Equal(expectedStackPolicy))
+`)
+		stackPolicy, err := postgres.GetStackPolicy()
+		Expect(err).NotTo(HaveOccurred())
+		actualStackPolicy := []byte(stackPolicy)
+		options := jsondiff.DefaultConsoleOptions()
+		difference, fullDiff := jsondiff.Compare(expectedStackPolicy, actualStackPolicy, &options)
+		Expect(difference).To(Equal(jsondiff.FullMatch), fullDiff)
 	})
 
 	Context("cloudformation", func() {
