@@ -314,7 +314,7 @@ func (p *Postgres) GetStackPolicy() (string, error) {
 			Effect:    "Allow",
 			Action:    []string{"Update:Modify"},
 			Principal: "*",
-			Resource:  fmt.Sprintf("LogicalResourceId/RDSDBInstance%d", i),
+			Resource:  fmt.Sprintf("LogicalResourceId/%s%d", PostgresResourceInstance, i),
 		})
 	}
 
