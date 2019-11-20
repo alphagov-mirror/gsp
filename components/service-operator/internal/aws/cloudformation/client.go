@@ -503,12 +503,12 @@ func IsNotFoundError(err error) bool {
 func getStackPolicy(stack Stack) (*string, error) {
 	var stackPolicy *string = nil
 	if stackPolicyProvider, ok := stack.(StackPolicyProvider); ok {
-		policy, err := stackPolicyProvider.GetStackPolicy()
+		policy, err := json.Marshal(stackPolicyProvider.GetStackPolicy())
 		if err != nil {
 			return nil, err
 		}
 
-		stackPolicy = aws.String(policy)
+		stackPolicy = aws.String(string(policy))
 	}
 
 	return stackPolicy, nil

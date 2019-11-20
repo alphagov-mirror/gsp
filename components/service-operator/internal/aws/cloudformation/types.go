@@ -1,6 +1,7 @@
 package cloudformation
 
 import (
+	"github.com/alphagov/gsp/components/service-operator/internal/aws"
 	"github.com/alphagov/gsp/components/service-operator/internal/object"
 )
 
@@ -52,5 +53,5 @@ type ServiceEntryCreator interface {
 // CloudFormationStack policy to prevent unauthorised operations on a given
 // stack.
 type StackPolicyProvider interface {
-	GetStackPolicy() (string, error)
+	GetStackPolicy() aws.StackPolicyDocument
 }

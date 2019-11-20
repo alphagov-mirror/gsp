@@ -9,9 +9,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/alphagov/gsp/components/service-operator/apis/database/v1beta1"
+	"github.com/alphagov/gsp/components/service-operator/internal/aws"
 	"github.com/alphagov/gsp/components/service-operator/internal/aws/cloudformation"
 	"github.com/alphagov/gsp/components/service-operator/internal/env"
-	"github.com/nsf/jsondiff"
 )
 
 var _ = Describe("Postgres", func() {
@@ -122,54 +122,49 @@ var _ = Describe("Postgres", func() {
 	})
 
 	It("should have a sensible stack policy", func() {
-		expectedStackPolicy := []byte(`
-{
-  "Statement" : [
-    {
-      "Effect" : "Deny",
-      "Action" : ["Update:Replace", "Update:Delete"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSCluster"
-    },
-    {
-      "Effect" : "Allow",
-      "Action" : ["Update:Modify"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSCluster"
-    },
-    {
-      "Effect" : "Deny",
-      "Action" : ["Update:Replace", "Update:Delete"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance0"
-    },
-    {
-      "Effect" : "Allow",
-      "Action" : ["Update:Modify"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance0"
-    },
-    {
-      "Effect" : "Deny",
-      "Action" : ["Update:Replace", "Update:Delete"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance1"
-    },
-    {
-      "Effect" : "Allow",
-      "Action" : ["Update:Modify"],
-      "Principal": "*",
-      "Resource" : "LogicalResourceId/RDSDBInstance1"
-    }
-  ]
-}
-`)
-		stackPolicy, err := postgres.GetStackPolicy()
-		Expect(err).NotTo(HaveOccurred())
-		actualStackPolicy := []byte(stackPolicy)
-		options := jsondiff.DefaultConsoleOptions()
-		difference, fullDiff := jsondiff.Compare(expectedStackPolicy, actualStackPolicy, &options)
-		Expect(difference).To(Equal(jsondiff.FullMatch), fullDiff)
+		expectedStackPolicyDocument := aws.StackPolicyDocument{
+			Statement: []aws.StatementEntry{
+				{
+					Effect:    "Deny",
+					Action:    []string{"Update:Replace", "Update:Delete"},
+					Principal: "*",
+					Resource:  "LogicalResourceId/RDSCluster",
+				},
+				{
+					Effect:    "Allow",
+					Action:    []string{"Update:Modify"},
+					Principal: "*",
+					Resource:  "LogicalResourceId/RDSCluster",
+				},
+				{
+					Effect:    "Deny",
+					Action:    []string{"Update:Replace", "Update:Delete"},
+					Principal: "*",
+					Resource:  "LogicalResourceId/RDSDBInstance0",
+				},
+				{
+					Effect:    "Allow",
+					Action:    []string{"Update:Modify"},
+					Principal: "*",
+					Resource:  "LogicalResourceId/RDSDBInstance0",
+				},
+				{
+					Effect:    "Deny",
+					Action:    []string{"Update:Replace", "Update:Delete"},
+					Principal: "*",
+					Resource:  "LogicalResourceId/RDSDBInstance1",
+				},
+				{
+					Effect:    "Allow",
+					Action:    []string{"Update:Modify"},
+					Principal: "*",
+					Resource:  "LogicalResourceId/RDSDBInstance1",
+				},
+			},
+		}
+
+		actualStackPolicyDocument := postgres.GetStackPolicy()
+		Expect(actualStackPolicyDocument).To(Equal(expectedStackPolicyDocument))
 	})
 
 	Context("cloudformation", func() {

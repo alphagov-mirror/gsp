@@ -16,7 +16,6 @@ limitations under the License.
 package v1beta1
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -283,7 +282,7 @@ func (p *Postgres) GetServiceEntrySpecs(outputs cloudformation.Outputs) ([]map[s
 
 // GetStackPolicy implements cloudformation.Stack to return a serialised form of the stack policy, or nil if one is
 // not needed
-func (p *Postgres) GetStackPolicy() (string, error) {
+func (p *Postgres) GetStackPolicy() aws.StackPolicyDocument {
 	statements := []aws.StatementEntry{
 		{
 			Effect:    "Deny",
@@ -324,12 +323,7 @@ func (p *Postgres) GetStackPolicy() (string, error) {
 		Statement: statements,
 	}
 
-	stackPolicyBytes, err := json.Marshal(&stackPolicy)
-	if err != nil {
-		return "", err
-	}
-
-	return string(stackPolicyBytes), nil
+	return stackPolicy
 }
 
 // +kubebuilder:object:root=true
