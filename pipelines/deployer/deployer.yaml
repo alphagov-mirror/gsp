@@ -463,7 +463,7 @@ drain_cluster_task: &drain_cluster_task
       aws eks update-kubeconfig --name "${CLUSTER_NAME}" --kubeconfig ./kubeconfig
       export KUBECONFIG=$(pwd)/kubeconfig
 
-      export RESOURCE_TYPES=$(kubectl get crd -o json | jq -r '.items[] | select (.spec.group | endswith(".govsvc.uk")) | .spec.names.kind')
+      export RESOURCE_TYPES=$(kubectl get crd -o json | jq -r '.items[] | select (.spec.group | endswith(".govsvc.uk")) | .spec.names.singular')
       kubectl delete -A --all $(echo $RESOURCE_TYPES | tr '\n' ',')
 
       echo "fetching cluster VPC ID..."
