@@ -218,8 +218,6 @@ configs:
   prod:      get, list, watch
   concourse: get, list, watch
 
------------ DP below this line
-
 ApiGroup: config.istio.io
 adapters:
   non-prod:  get, list, watch
