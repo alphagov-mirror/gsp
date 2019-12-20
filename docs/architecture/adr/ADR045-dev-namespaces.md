@@ -72,4 +72,12 @@ deploy changes from a branch within a Team (scoped to a namespace) allowing more
 rapid feedback of proposed changes. The potential impact of security attacks or
 compromises will be limited by namespace-isolated credentials.
 
+The shared `london.<cluster>.govsvc.uk` zone will be split into
+per-namespace DNS zones, most likely in the form
+`<namespace>.london.<cluster>.govsvc.uk`.  For example, sandbox canary
+will move from `canary.london.sandbox.govsvc.uk` to
+`canary.sandbox-main.london.sandbox.govsvc.uk`.  This change will have
+a user impact; we will need to collaborate with them to make sure we
+don't break things for them.
+
 [ADR043]: ./ADR043-k8s-resource-access.md
