@@ -17,7 +17,7 @@ This presents several security problems that need to be addressed.
 The in-cluster concourse:
 
 * must not be able to create or edit daemonsets
-* must not be able to create pods that use host networking, or run in privildged
+* must not be able to create pods that use host networking, or run in privileged
   mode
 * must not be authorised to create any "cluster" scoped resources (e.g.
   clusterrole, custom resources etc.)
@@ -46,7 +46,8 @@ For CloudHSM access:
 
 ## Decision
 
-We will address the majority of the security concerns by implementing [ADR043].
+We will address the majority of the security concerns by implementing
+[ADR043][].
 
 We will address the harbor concerns by creating namespace-scoped credentials
 relating to namespace-scoped harbor "projects" and provide these credentials via
