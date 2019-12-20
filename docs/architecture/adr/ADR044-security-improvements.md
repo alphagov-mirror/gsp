@@ -6,8 +6,10 @@ Pending
 
 ## Context
 
-Currently there are no restrictions on what options a service team puts into pod
-specifications, which could leave us vulnerable to several attack vectors.
+Currently there are no restrictions on what options a service team
+puts into pod specifications.  This means that a pod in a tenant
+namespace could escalate its privileges to access resources that it
+should not have access to.
 
 Examples include:
 
@@ -16,8 +18,15 @@ Examples include:
 * host networking
 * arbitrary host volume mounts
 
-For a full list see [pod security
-policies](https://kubernetes.io/docs/concepts/policy/pod-security-policy/).
+For a full list see [pod security policies][] in the kubernetes
+documentation.
+
+Currently, our defence against this is that we enforce deploying
+infrastructure as code, and we require 2-eyes review on every code
+change.  However, kubernetes offers pod security policies as an extra
+layer of defence.
+
+[pod security policies]: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
 
 ## Decision
 
