@@ -12,25 +12,16 @@ groups via roles.
 
 ## Decision
 
-We will grant users access to the resources according to the rules given below
-(see Appendix A). Namespaces will be split into "prod" and "non-prod" as the
-access for some resources will be different. Here "prod" and "non-prod" refer to
-classifications of namespace. Examples of "prod" namespaces:
+We will create two levels of access within each namespace:
 
-- kube-system
-- istio-system
-- gsp-system
-- verify-doc-checking-build
-- verify-doc-checking-prod
-- verify-proxy-node-build
-- verify-proxy-node-prod
+* Operator
+* Auditor
 
-The "non-prod" namespaces are those created for developers to rapidly iterate on
-changes to test they work in a GSP cluster environment and fall completely
-outside the path to release.
+The Operator will be mostly read-write within the namespace. Developers working on branches that are not part of the release process may be granted this role in certain namespaces. This is also the role the in-cluster concourse team for each namespace will be granted.
 
-Also included in the permissions rules below are those given to the in-cluster
-concourse. These permissions apply to both "prod" and "non-prod" namespaces.
+The Auditor is mostly read-only and will be given to all authenticated users in the cluster.
+
+The complete list of resource permissions is given in Appendix A.
 
 ## Consequences
 
@@ -50,623 +41,484 @@ concourse. These permissions apply to both "prod" and "non-prod" namespaces.
 ```
 ApiGroup: ""
 configmaps:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 endpoints:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 events:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 limitranges:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
-namespaces:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
+s:
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 nodes:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 persistentvolumeclaims:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   get, list, watch
 pods:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 podtemplates:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 resourcequotas:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 secrets:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, list, watch
 serviceaccounts:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 services:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: "access.govsvc.uk"
 principals:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: admissionregistration.k8s.io
 mutatingwebhookconfigurations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 validatingwebhookconfigurations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: apiextensions.k8s.io
 customresourcedefinitions:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 apiservices:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: apps
 daemonsets:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 deployments:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 replicasets:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 statefulsets:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: authentication.istio.io
 meshpolicies:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 policies:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   get, list, watch
 
 ApiGroup: autoscaling
 horizontalpodautoscalers:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: batch
 cronjobs:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 jobs:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: bitnami.com
 sealedsecrets:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: cert-manager.io
 certificaterequests:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 certificates:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 clusterissuers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 issuers:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: certificates.k8s.io
 certificatesigningrequests:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
-ApiGroup: concourse.k8s.io
 pipelines:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 teams:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: config.gatekeeper.sh
 configs:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: config.istio.io
 adapters:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 apikeys:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 attributemanifests:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 authorizations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 bypasses:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 checknothings:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 circonuses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 cloudwatches:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 deniers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 dogstatsds:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 edges:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 fluentds:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 handlers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 httpapispecbindings:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 httpapispecs:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 instances:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 kubernetesenvs:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 kuberneteses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 listcheckers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 listentries:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 logentries:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 memquotas:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 metrics:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 noops:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 opas:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 prometheuses:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 quotas:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 quotaspecbindings:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 quotaspecs:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 rbacs:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 redisquotas:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 reportnothings:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 rules:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 signalfxs:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 solarwindses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 stackdrivers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 statsds:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 stdios:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 templates:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 tracespans:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 zipkins:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: coordination.k8s.io
 leases:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: crd.k8s.amazonaws.com
 eniconfigs:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: crd.projectcalico.org
 bgpconfigurations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 bgppeers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 blockaffinities:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 clusterinformations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 felixconfigurations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 globalnetworkpolicies:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 globalnetworksets:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 hostendpoints:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 ipamblocks:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 ippools:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 networkpolicies:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 networksets:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: database.govsvc.uk
 postgres:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: events.k8s.io
 events:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: extensions
 daemonsets:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 deployments:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 ingresses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 networkpolicies:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 podsecuritypolicies:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 replicasets:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: metrics.k8s.io
 nodes:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 pods:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: monitoring.coreos.com
 alertmanagers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 podmonitors:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 prometheuses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 prometheusrules:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 servicemonitors:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: networking.istio.io
 destinationrules:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 envoyfilters:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 gateways:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 serviceentries:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 sidecars:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 virtualservices:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: networking.k8s.io
 ingresses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 networkpolicies:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: node.k8s.io
 runtimeclasses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: policy
 poddisruptionbudgets:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 podsecuritypolicies:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: queue.govsvc.uk
 sqs:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: rbac.authorization.k8s.io
 clusterrolebindings:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 clusterroles:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 rolebindings:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 roles:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: rbac.istio.io
 authorizationpolicies:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 clusterrbacconfigs:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 rbacconfigs:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 servicerolebindings:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 serviceroles:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: scheduling.k8s.io
 priorityclasses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: storage.govsvc.uk
 s3buckets:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: storage.k8s.io
 csidrivers:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 csinodes:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 storageclasses:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 volumeattachments:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: templates.gatekeeper.sh
 constrainttemplates:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 
 ApiGroup: verify.gov.uk
 certificaterequests:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 metadata:
-  non-prod:  create, delete, get, list, patch, update, watch
-  prod:      delete, get, list, watch
-  concourse: create, delete, get, list, patch, update, watch
+  Operator:  create, delete, get, list, patch, update, watch
+  Auditor:   delete, get, list, watch
 
 ApiGroup: webhook.cert-manager.io
 mutations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 validations:
-  non-prod:  get, list, watch
-  prod:      get, list, watch
-  concourse: get, list, watch
+  Operator:  get, list, watch
+  Auditor:   get, list, watch
 ```
