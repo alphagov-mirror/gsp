@@ -17,9 +17,13 @@ We will create two levels of access within each namespace:
 * Operator
 * Auditor
 
-The Operator will be mostly read-write within the namespace. Developers working on branches that are not part of the release process may be granted this role in certain namespaces. This is also the role the in-cluster concourse team for each namespace will be granted.
+The Operator is a relatively permissive read-write role within the namespace.
+Developers working on branches that are not part of the release process may be
+granted this role in certain namespaces. This is also the role the in-cluster
+concourse team for each namespace will be granted.
 
-The Auditor is mostly read-only and will be given to all authenticated users in the cluster.
+The Auditor is mostly read-only and will be given to all authenticated users in
+the cluster.
 
 The complete list of resource permissions is given in Appendix A.
 
