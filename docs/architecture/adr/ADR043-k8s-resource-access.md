@@ -56,7 +56,7 @@ events:
 limitranges:
   Operator:  create, delete, get, list, patch, update, watch
   Auditor:   delete, get, list, watch
-s:
+namespaces:
   Operator:  get, list, watch
   Auditor:   get, list, watch
 nodes:
