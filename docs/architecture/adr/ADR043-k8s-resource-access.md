@@ -101,6 +101,8 @@ ApiGroup: apiextensions.k8s.io
 customresourcedefinitions:
   Operator:  get, list, watch
   Auditor:   get, list, watch
+
+ApiGroup: apiregistration.k8s.io
 apiservices:
   Operator:  get, list, watch
   Auditor:   get, list, watch
