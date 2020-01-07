@@ -71,7 +71,7 @@ spec:
 
 ### System namespaces
 
-For system namespaces, including `gsp-system`, `kube-system` and `istio-system`,
+System namespaces, including `gsp-system`, `kube-system` and `istio-system`,
 should use a less restrictive policy.
 
 ```
