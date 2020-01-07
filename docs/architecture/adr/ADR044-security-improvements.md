@@ -38,7 +38,7 @@ We will implement pod security policies according to the following:
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
-  name: cluster-default
+  name: gsp-default
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
 spec:
