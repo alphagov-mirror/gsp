@@ -22,8 +22,9 @@ Developers working on branches that are not part of the release process may be
 granted this role in certain namespaces. This is also the role the in-cluster
 concourse team for each namespace will be granted.
 
-The Auditor is mostly read-only and will be given to all authenticated users in
-the cluster.
+The Auditor will be given to all authenticated users in the cluster. This should
+allow for debugging of issues and incidents and basic remedial actions without
+needing formal escalation procedures.
 
 The complete list of resource permissions is given in Appendix A.
 
@@ -36,8 +37,10 @@ The complete list of resource permissions is given in Appendix A.
   namespaces.
 * service team members will not be able to interfere with other devs'
   namespaces, "system" namespaces or "prod" namespaces.
-* SREs and service team members will not be able to cause service degradations
-  or outages to production services.
+* SREs and service team members will not be able to cause major production
+  service outages. Degradation will be possible through deletion of certain
+  resources but that will be easily fixable by running the appropriate
+  deployment pipeline.
 
 
 ## Appendix A: Permissions rules

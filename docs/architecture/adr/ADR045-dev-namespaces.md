@@ -12,11 +12,19 @@ potentially risky. We need to enable devs to get more rapid feedback through use
 of namespaces that allow for deployments from arbitrary branches or from local
 `kubectl apply` actions.
 
+In the past service teams have made use of the Sandbox cluster for some of this
+testing where we allow them Cluster Admin permissions. However the primary
+function of the Sandbox cluster is to test changes to the platform itself and so
+is often down or otherwise degraded, which also slows service team development
+down.
+
 This presents several security problems that need to be addressed.
 
 The in-cluster concourse:
 
-* must not be able to create or edit daemonsets
+* must not be able to create or edit daemonsets (as tenants should not need to
+  interact with per-node pods that typically need elevated permissions to e.g.
+  manipulate the network stack)
 * must not be able to create pods that use host networking, or run in privileged
   mode
 * must not be authorised to create any "cluster" scoped resources (e.g.
