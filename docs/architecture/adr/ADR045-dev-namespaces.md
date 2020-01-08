@@ -67,9 +67,12 @@ external-dns to a dedicated zone.
 We will address the istio concerns through the use of gatekeeper constraints
 (e.g. all istio resources that support it have `exportTo: ["."]` set).
 
-We will address the CloudHSM concerns by creating users (as required) in the
-CloudHSM cluster and providing those credentials into the namespace via secrets
-(or SealedSecrets).
+We will create separate CryptoUsers in the CloudHSM for each namespace that
+requires access. CloudHSM cryptographic keys/operations can then be scoped to a
+single user (& namespace). This will allow each namespace to effectively have
+it's own virtual slice of the CloudHSM and enable controlling access on a
+per-namespace basis.
+
 
 ## Consequences
 
