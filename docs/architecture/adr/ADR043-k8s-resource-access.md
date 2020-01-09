@@ -82,7 +82,6 @@ rules:
   verbs:
   - delete
   - list
-  - watch
 - apiGroups: [""]
   resources:
   - pods/portforward
@@ -581,6 +580,7 @@ rules:
   - get
   - patch
   - update
+  - watch
 
 - apiGroups: ["access.govsvc.uk"]
   resources:
