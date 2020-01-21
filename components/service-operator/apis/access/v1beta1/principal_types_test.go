@@ -44,7 +44,8 @@ var _ = Describe("Principal", func() {
 		})
 
 		It("should have expected output keys", func() {
-			t := principal.GetStackTemplate()
+			t, err := principal.GetStackTemplate()
+			Expect(err).ToNot(HaveOccurred())
 			Expect(t.Outputs).To(And(
 				HaveKey("IAMRoleName"),
 				HaveKey("IAMRoleArn"),
@@ -61,7 +62,8 @@ var _ = Describe("Principal", func() {
 			var role *cloudformation.AWSIAMRole
 
 			JustBeforeEach(func() {
-				t := principal.GetStackTemplate()
+				t, err := principal.GetStackTemplate()
+				Expect(err).ToNot(HaveOccurred())
 				Expect(t.Resources[v1beta1.IAMRoleResourceName]).To(BeAssignableToTypeOf(&cloudformation.AWSIAMRole{}))
 				role = t.Resources[v1beta1.IAMRoleResourceName].(*cloudformation.AWSIAMRole)
 			})
