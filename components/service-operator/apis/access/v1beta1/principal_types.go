@@ -68,6 +68,8 @@ type Principal struct {
 type PrincipalSpec struct {
 	// Secret name to be used for storing relevant instance secrets for further use.
 	Secret string `json:"secret,omitempty"`
+	// Name of a service account to trust with access to this Principal, if any.
+	TrustServiceAccount string `json:"trustServiceAccount,omitempty"`
 }
 
 // GetStackName generates a unique name for the stack
@@ -104,13 +106,22 @@ func (s *Principal) GetStackTemplate() (*cloudformation.Template, error) {
 	// We have to build the assume role policy document as JSON and put it through Fn::Sub as we'll
 	// need one of the parameters (the OIDC provider URL) to go into a condition key, so we can't
 	// use Ref.
-	policyDocJson, err := json.Marshal(cloudformation.NewAssumeRolePolicyDocument(
-		fmt.Sprintf("${%s}", IAMRolePrincipalParameterName),
-		fmt.Sprintf("${%s}", ServiceOperatorIAMRoleArn),
-		fmt.Sprintf("${%s}", IAMOIDCProviderARNParameterName),
-		fmt.Sprintf("${%s}:sub", IAMOIDCProviderURLParameterName),
-		fmt.Sprintf("system:serviceaccount:%s:%s", s.GetNamespace(), s.GetName()),
-	))
+	var err error
+	var policyDocJson []byte
+	if s.Spec.TrustServiceAccount == "" {
+		policyDocJson, err = json.Marshal(cloudformation.NewAssumeRolePolicyDocument(
+			fmt.Sprintf("${%s}", IAMRolePrincipalParameterName),
+			fmt.Sprintf("${%s}", ServiceOperatorIAMRoleArn),
+		))
+	} else {
+		policyDocJson, err = json.Marshal(cloudformation.NewAssumeRolePolicyDocumentWithServiceAccount(
+			fmt.Sprintf("${%s}", IAMRolePrincipalParameterName),
+			fmt.Sprintf("${%s}", ServiceOperatorIAMRoleArn),
+			fmt.Sprintf("${%s}", IAMOIDCProviderARNParameterName),
+			fmt.Sprintf("${%s}:sub", IAMOIDCProviderURLParameterName),
+			fmt.Sprintf("system:serviceaccount:%s:%s", s.GetNamespace(), s.Spec.TrustServiceAccount),
+		))
+	}
 	if err != nil {
 		return nil, err
 	}

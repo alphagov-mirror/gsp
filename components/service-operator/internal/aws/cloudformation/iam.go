@@ -2,7 +2,25 @@ package cloudformation
 
 // helpers for building iam documents in cloudformation
 
-func NewAssumeRolePolicyDocument(awsPrincipal string, serviceOperatorRoleArn string, federatedPrincipal string, federatedConditionKey string, federatedConditionValue string) AssumeRolePolicyDocument {
+func NewAssumeRolePolicyDocument(awsPrincipal string, serviceOperatorRoleArn string) AssumeRolePolicyDocument {
+	return AssumeRolePolicyDocument{
+		Version: "2012-10-17",
+		Statement: []AssumeRolePolicyStatement{
+			{
+				Effect: "Allow",
+				Principal: PolicyPrincipal{
+					AWS: []string{
+						awsPrincipal,
+						serviceOperatorRoleArn,
+					},
+				},
+				Action: []string{"sts:AssumeRole"},
+			},
+		},
+	}
+}
+
+func NewAssumeRolePolicyDocumentWithServiceAccount(awsPrincipal string, serviceOperatorRoleArn string, federatedPrincipal string, federatedConditionKey string, federatedConditionValue string) AssumeRolePolicyDocument {
 	return AssumeRolePolicyDocument{
 		Version: "2012-10-17",
 		Statement: []AssumeRolePolicyStatement{

@@ -97,8 +97,8 @@ func (r *ServiceAccountController) reconcileWithContext(ctx context.Context, req
 func (r *ServiceAccountController) updatePrincipal(ctx context.Context, o *core.ServiceAccount) (*access.Principal, error) {
 	principal := &access.Principal{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      o.GetName(),
-			Namespace: o.GetNamespace(),
+			GenerateName: o.GetName(),
+			Namespace:    o.GetNamespace(),
 		},
 	}
 	principalKey, err := client.ObjectKeyFromObject(principal)
@@ -111,6 +111,9 @@ func (r *ServiceAccountController) updatePrincipal(ctx context.Context, o *core.
 	}
 	op, err := controllerutil.CreateOrUpdate(ctx, r.KubernetesClient, principal, func() error {
 		principal.ObjectMeta.Labels = o.ObjectMeta.Labels
+		principal.Spec = access.PrincipalSpec{
+			TrustServiceAccount: o.GetName(),
+		}
 		// mark the principal as owned by the o resource so it gets gc'd
 		if err := controllerutil.SetControllerReference(o, principal, r.Scheme); err != nil {
 			return err
