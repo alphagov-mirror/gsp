@@ -48,7 +48,6 @@ var _ = Describe("ServiceAccountController", func() {
 					},
 				},
 			}
-			principal access.Principal
 		)
 
 		By("creating an resource with kubernetes api", func() {
@@ -64,15 +63,23 @@ var _ = Describe("ServiceAccountController", func() {
 
 		By("creating a principal with labels", func() {
 			Eventually(func() map[string]string {
-				_ = client.Get(ctx, resourceNamespacedName, &principal)
-				return principal.ObjectMeta.Labels
+				var list access.PrincipalList
+				err := client.List(ctx, &list)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(list.Items).To(HaveLen(1))
+				return list.Items[0].ObjectMeta.Labels
 			}, time.Minute*5).Should(HaveKeyWithValue(cloudformation.AccessGroupLabel, "test.access.group"))
 		})
 
 		By("creating a principal with an owner reference", func() {
 			Eventually(func() []metav1.OwnerReference {
-				_ = client.Get(ctx, resourceNamespacedName, &principal)
-				return principal.ObjectMeta.OwnerReferences
+				var list access.PrincipalList
+				err := client.List(ctx, &list)
+				Expect(err).ToNot(HaveOccurred())
+				if len(list.Items) == 1 {
+					return list.Items[0].ObjectMeta.OwnerReferences
+				}
+				return []metav1.OwnerReference{}
 			}).Should(HaveLen(1))
 		})
 
