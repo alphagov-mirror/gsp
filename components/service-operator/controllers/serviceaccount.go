@@ -13,6 +13,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"k8s.io/apimachinery/pkg/labels"
 
 	access "github.com/alphagov/gsp/components/service-operator/apis/access/v1beta1"
 	"github.com/alphagov/gsp/components/service-operator/internal/aws/cloudformation"
@@ -95,20 +96,37 @@ func (r *ServiceAccountController) reconcileWithContext(ctx context.Context, req
 }
 
 func (r *ServiceAccountController) updatePrincipal(ctx context.Context, o *core.ServiceAccount) (*access.Principal, error) {
-	principal := &access.Principal{
-		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: o.GetName(),
-			Namespace:    o.GetNamespace(),
-		},
+	// List principals with labels set by o.ObjectMeta.Labels
+	list := &access.PrincipalList{}
+	listOptsFunc := func(opts *client.ListOptions) {
+		opts.Namespace = o.GetNamespace()
+		opts.LabelSelector = labels.SelectorFromSet(o.ObjectMeta.Labels)
 	}
-	principalKey, err := client.ObjectKeyFromObject(principal)
+	err := r.KubernetesClient.List(ctx, list, listOptsFunc)
 	if err != nil {
 		return nil, err
 	}
-	err = r.KubernetesClient.Get(ctx, principalKey, principal)
-	if err != nil && !apierrs.IsNotFound(err) {
-		return nil, err
+	principals := list.GetPrincipals()
+	var principal *access.Principal
+	if len(principals) == 0 {
+		// if none are found, make a new one with GenerateName
+		principal = &access.Principal{
+			ObjectMeta: metav1.ObjectMeta{
+				GenerateName: o.GetName(),
+				Namespace:    o.GetNamespace(),
+			},
+		}
+	} else if len(principals) == 1 {
+		// if one is found, use it
+		var ok bool
+		principal, ok = principals[0].(*access.Principal)
+		if !ok {
+			return nil, fmt.Errorf("found principal but could not cast to *access.Principal")
+		}
+	} else if len(principals) > 1 {
+		return nil, fmt.Errorf("multiple principals found with service operator's labels")
 	}
+
 	op, err := controllerutil.CreateOrUpdate(ctx, r.KubernetesClient, principal, func() error {
 		principal.ObjectMeta.Labels = o.ObjectMeta.Labels
 		principal.Spec = access.PrincipalSpec{
@@ -121,7 +139,8 @@ func (r *ServiceAccountController) updatePrincipal(ctx context.Context, o *core.
 		return nil
 	})
 	r.Log.Info("update-principal",
-		"principal", principalKey,
+		"namespace", o.GetNamespace(),
+		"svcacc", o.GetName(),
 		"op", op,
 		"err", err,
 	)

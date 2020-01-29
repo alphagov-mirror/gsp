@@ -66,8 +66,10 @@ var _ = Describe("ServiceAccountController", func() {
 				var list access.PrincipalList
 				err := client.List(ctx, &list)
 				Expect(err).ToNot(HaveOccurred())
-				Expect(list.Items).To(HaveLen(1))
-				return list.Items[0].ObjectMeta.Labels
+				if len(list.Items) == 1 {
+					return list.Items[0].ObjectMeta.Labels
+				}
+				return map[string]string{}
 			}, time.Minute*5).Should(HaveKeyWithValue(cloudformation.AccessGroupLabel, "test.access.group"))
 		})
 
