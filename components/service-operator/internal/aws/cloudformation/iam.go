@@ -2,7 +2,7 @@ package cloudformation
 
 // helpers for building iam documents in cloudformation
 
-func NewAssumeRolePolicyDocument(awsPrincipal string, serviceOperatorRoleArn string) AssumeRolePolicyDocument {
+func NewAssumeRolePolicyDocument(awsPrincipal, serviceOperatorRoleArn string) AssumeRolePolicyDocument {
 	return AssumeRolePolicyDocument{
 		Version: "2012-10-17",
 		Statement: []AssumeRolePolicyStatement{
