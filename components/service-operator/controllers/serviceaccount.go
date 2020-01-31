@@ -63,7 +63,7 @@ func (r *ServiceAccountController) Reconcile(req ctrl.Request) (res ctrl.Result,
 	return res, err
 }
 
-// reconcileWithContext fetches the resource to reconcile and executes reconcileObjectWithContext and returns if any changes were made
+// reconcileWithContext fetches the resource to reconcile and executes reconcileServiceAccountWithContext and returns if any changes were made
 func (r *ServiceAccountController) reconcileWithContext(ctx context.Context, req ctrl.Request) (controllerutil.OperationResult, error) {
 	bg := context.Background()
 	o := &core.ServiceAccount{}
@@ -84,7 +84,7 @@ func (r *ServiceAccountController) reconcileWithContext(ctx context.Context, req
 	// track changes to our object resource and call the main reconcile func
 	var reconcileErr error
 	op, updateErr := controllerutil.CreateOrUpdate(bg, r.KubernetesClient, o, func() error {
-		reconcileErr = r.reconcileObjectWithContext(ctx, req, o)
+		reconcileErr = r.reconcileServiceAccountWithContext(ctx, req, o)
 		return nil // always try to update
 	})
 	if reconcileErr != nil {
@@ -150,18 +150,18 @@ func (r *ServiceAccountController) updatePrincipal(ctx context.Context, o *core.
 	return principal, nil
 }
 
-// reconcileObjectWithContext is the main loop, it will mutate "o" with any changes required
-func (r *ServiceAccountController) reconcileObjectWithContext(ctx context.Context, req ctrl.Request, o *core.ServiceAccount) error {
-	defer r.Log.Info("reconcileObjectWithContext",
-		"o", o,
+// reconcileServiceAccountWithContext is the main loop, it will mutate "o" with any changes required
+func (r *ServiceAccountController) reconcileServiceAccountWithContext(ctx context.Context, req ctrl.Request, sa *core.ServiceAccount) error {
+	defer r.Log.Info("reconcileServiceAccountWithContext",
+		"sa", sa,
 	)
 	// examine DeletionTimestamp to determine if object is under deletion
-	if !o.GetDeletionTimestamp().IsZero() {
+	if !sa.GetDeletionTimestamp().IsZero() {
 		// The object is being deleted
 		return nil
 	}
 
-	principal, err := r.updatePrincipal(ctx, o)
+	principal, err := r.updatePrincipal(ctx, sa)
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func (r *ServiceAccountController) reconcileObjectWithContext(ctx context.Contex
 		return fmt.Errorf("principal not ready")
 	}
 
-	o.Annotations = map[string]string{
+	sa.Annotations = map[string]string{
 		"eks.amazonaws.com/role-arn": principal.Status.AWS.Info[access.IAMRoleArnOutputName],
 	}
 
