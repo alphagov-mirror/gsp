@@ -19,6 +19,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/alphagov/gsp/components/service-operator/internal/aws/cloudformation"
 	"github.com/alphagov/gsp/components/service-operator/internal/aws/ecr"
@@ -142,6 +143,7 @@ func (s *Principal) GetStackTemplate() (*cloudformation.Template, error) {
 		RoleName:                 s.GetRoleName(),
 		AssumeRolePolicyDocument: cloudformation.Sub(subbableHack),
 		PermissionsBoundary:      cloudformation.Ref(IAMPermissionsBoundaryParameterName),
+		MaxSessionDuration:       43200, // 12 hours
 	}
 
 	template.Resources[SharedPolicyResourceName] = &cloudformation.AWSIAMPolicy{
@@ -204,6 +206,14 @@ func (s *Principal) GetTemplateSecrets(ctx context.Context, client sdk.Client, o
 	templateSecrets["ImageRegistryUsername"] = ecrCredentials.Username
 	templateSecrets["ImageRegistryPassword"] = ecrCredentials.Password
 	templateSecrets["ImageRegistryEndpoint"] = ecrCredentials.Endpoint
+
+	assumedRoleCredentials, err := client.GetRoleCredentials(roleArn, time.Hour * 12).Get()
+	if err != nil {
+		return nil, err
+	}
+	templateSecrets["AccessKeyID"] = assumedRoleCredentials.AccessKeyID
+	templateSecrets["SecretAccessKey"] = assumedRoleCredentials.SecretAccessKey
+	templateSecrets["SessionToken"] = assumedRoleCredentials.SessionToken
 
 	return templateSecrets, nil
 }
