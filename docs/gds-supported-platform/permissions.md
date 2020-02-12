@@ -7,7 +7,11 @@ depend on their configuration in [gds-trusted-developers]. Specifically, the
 ## Cluster admins
 
 A `gds-trusted-developer` may be configured as a cluster admin in all clusters
-in an account as follows:
+in an account. The cluster admin permissions should be used only during periods
+where it is strictly necessary (such as during an incident) and should be
+surrendered immediately following the return to normal service.
+
+To configure a user as a cluster admin:
 
 ```
 roles:
@@ -35,6 +39,14 @@ roles:
 All `gds-trusted-developers` in a given account are given "auditor" access to
 the cluster. This gives basic read access to the whole cluster (except for some
 sensitive resources such as secrets).
+
+To configure an "auditor":
+
+```
+roles:
+- account: verify
+  role: auditor
+```
 
 ## Further info
 
